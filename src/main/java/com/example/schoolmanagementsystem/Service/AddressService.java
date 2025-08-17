@@ -45,12 +45,23 @@ public class AddressService {
         addressRepository.save(address);
     }
 
-    public void deleteAddress(Integer id){
-        Address address = addressRepository.findAddressById(id);
+    public void deleteAddress(Integer addressId){
 
+        // check if address exist:
+        Address address = addressRepository.findAddressById(addressId);
         if(address == null){
             throw new ApiException("address id not found");
         }
+
+        //check if teacher with this address exist:
+        Teacher teacher = teacherRepository.giveMeTeacherByAddressId(address.getId());
+        if(teacher == null){
+            throw new ApiException("teacher not found");
+        }
+
+        // delete address from teacher;
+        teacher.setAddress(null);
+        teacherRepository.save(teacher);
 
         addressRepository.delete(address);
     }
